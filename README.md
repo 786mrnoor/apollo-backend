@@ -13,14 +13,6 @@ Backend live reference: [Backend Link](https://apollo-backend.vercel.app/api/lis
 
 ## ⚙️ Technologies Used
 
-### Frontend (Next.js)
-- **Next.js 14 (App Router)**
-- **Vanilla CSS**
-- **Dynamic Filters with SearchParams**
-- **Off-page SEO Support**
-- **Custom Hook (`useFilter`)**
-- **SSR Ready**
-
 ### Backend (Express.js + MongoDB)
 - **Express.js REST API**
 - **MongoDB with Mongoose**
@@ -55,7 +47,7 @@ npm run dev
 
 ### 📡 API Endpoints
 
-#### POST `/add-doctor`
+#### POST `/api/add-doctor`
 
 Add a new doctor
 
@@ -77,7 +69,7 @@ Add a new doctor
 }
 ```
 
-#### GET `/list-doctors`
+#### GET `/api/list-doctors`
 
 List doctors with filters and pagination
 
