@@ -3,21 +3,15 @@
 A full-stack clone of the Apollo 24/7 doctor listing page using **Next.js (frontend)** and **Express + MongoDB (backend)**.  
 It supports filtering doctors by **consultation mode**, **experience**, **fees**, **language**, and **facility**, with pagination and REST API integration.
 
-Frontend live reference: [Apollo General Physician Page](https://apollo-mocha-delta.vercel.app/)
+[Frontend live link](https://apollo-mocha-delta.vercel.app/)
 
-Backend live reference: [Backend Link](https://apollo-backend.vercel.app/api/list-doctors)
+[Frontend source code link](https://github.com/786mrnoor/apollo/)
+
+[Backend live link](https://apollo-backend.vercel.app/api/list-doctors)
 
 ---
 
 ## ⚙️ Technologies Used
-
-### Frontend (Next.js)
-- **Next.js 14 (App Router)**
-- **Vanilla CSS**
-- **Dynamic Filters with SearchParams**
-- **Off-page SEO Support**
-- **Custom Hook (`useFilter`)**
-- **SSR Ready**
 
 ### Backend (Express.js + MongoDB)
 - **Express.js REST API**
@@ -53,7 +47,7 @@ npm run dev
 
 ### 📡 API Endpoints
 
-#### POST `/add-doctor`
+#### POST `/api/add-doctor`
 
 Add a new doctor
 
@@ -75,7 +69,7 @@ Add a new doctor
 }
 ```
 
-#### GET `/list-doctors`
+#### GET `/api/list-doctors`
 
 List doctors with filters and pagination
 
