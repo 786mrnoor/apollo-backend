@@ -37,51 +37,87 @@ function buildSortBy(sortBy) {
     return sort;
 }
 
-function buildFilter(filterObject) {
+function getRange(range) {
+    if (range.endsWith('+')) {
+        const min = parseInt(range.replace('+', ''));
+        return { $gte: min }
+    } else if (range.includes('-')) {
+        let [min, max] = range.split('-').map(Number);
+        return { $gte: min, $lte: max }
+    }
+}
+function buildFilter(query) {
     let filter = {
         $and: []
     };
-    if (!filterObject) return filter;
-    filterObject = JSON.parse(filterObject);
-    const { consultMode, experience, fees, language, facilityType } = filterObject;
+    const { consultMode, experience, fees, languages, facilityType } = query;
 
-    if (consultMode?.length > 0) {
-        // if there is both mode checked
-        if (!(consultMode.includes('PHYSICAL') && consultMode.includes('ONLINE'))) {
-            filter.$and.push({ consultMode: { $in: consultMode } });
-        }
+    // if there is only one mode checked
+    if (consultMode && !Array.isArray(consultMode)) {
+        filter.$and.push({ consultMode });
     }
 
-    if (experience?.length > 0) {
-        const expFilters = experience.map((range) => {
-            const { min, max } = range;
-            return { experience: { $gte: min, $lte: max } };
+    if (Array.isArray(experience)) {
+        const expFilters = experience.map((value) => {
+            const range = getRange(value);
+            return { experience: range };
         });
         filter.$and.push({ $or: expFilters });
     }
-    if (fees?.length > 0) {
-        const feesFilters = fees.map((range) => {
-            const { min, max } = range;
-            return { fees: { $gte: min, $lte: max } };
+    else if (experience) {
+        const range = getRange(experience);
+        if (range) {
+            filter.$and.push({ experience: range });
+        }
+    }
+
+    if (Array.isArray(fees)) {
+        const feesFilters = fees.map((value) => {
+            const range = getRange(value);
+            return {
+                $or: [
+                    { onlineConsultationFees: range },
+                    { physicalConsultationFees: range }
+                ]
+            }
         });
         filter.$and.push({ $or: feesFilters });
     }
+    else if (fees) {
+        const range = getRange(fees);
+        if (range) {
+            filter.$and.push({
+                $or: [
+                    { onlineConsultationFees: range },
+                    { physicalConsultationFees: range }
+                ]
+            });
+        }
+    }
 
-    if (language?.length > 0) filter.$and.push({ languages: { $in: language } })
-    if (facilityType?.length > 0) filter.$and.push({ facilityType: { $in: facilityType } })
+    if (Array.isArray(languages)) {
+        filter.$and.push({ languages: { $in: languages } })
+    }
+    else if (languages) {
+        filter.$and.push({ languages: languages })
+    }
 
-
+    if (Array.isArray(facilityType)) {
+        filter.$and.push({ facilityType: { $in: facilityType } })
+    } else if (facilityType) {
+        filter.$and.push({ facilityType: facilityType })
+    }
     return filter;
 
 }
 // GET /api/list-doctors
 export const listDoctors = async (req, res) => {
     try {
-        const { filterObject, sortby, page = 1, limit = 10 } = req.query;
+        const { sortby, page = 1, limit = 3 } = req.query;
+
+        const filter = buildFilter(req.query);
 
         const sort = buildSortBy(sortby);
-
-        const filter = buildFilter(filterObject)
 
         const doctors = await Doctor.find(filter)
             .sort(sort)
